@@ -17,7 +17,7 @@ class NTLogger:
     def start_logging(self):
         self.logging = True
         self.keys = sorted(self.table.getKeys())
-        fname = str(int(time.time()))
+        fname = str(int(time.time()))+".csv"
         self.logfile = open(fname, 'w')
         self.writer = csv.writer(self.logfile)
         self.writer.writerow(self.keys)
@@ -39,7 +39,6 @@ class NTLogger:
 
     def loop(self):
         log = self.table.getValue('log')
-        print(log)
         if self.logging and not log:
             self.stop_logging()
         elif self.logging:
@@ -52,7 +51,8 @@ if __name__ == "__main__":
     last_tm = time.time()
     while True:
         try:
-            time.sleep((1/log_frequency) - (time.time()-last_tm))
+            # time.sleep((1/log_frequency) - (time.time()-last_tm))
+            time.sleep(1/20)
         except ValueError as e:
             print(e)
         logger.loop()
