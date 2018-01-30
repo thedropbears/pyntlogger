@@ -1,8 +1,9 @@
-from networktables import NetworkTable
 import time
 import math
 
-table = NetworkTable.getTable('SmartDashboard')
+from networktables import NetworkTables
+
+table = NetworkTables.getTable('SmartDashboard')
 
 t = time.time()
 while time.time()-t < math.pi*2:
@@ -14,4 +15,4 @@ while time.time()-t < math.pi*2:
     time.sleep(1/20)
 
 table.putBoolean('log', False)
-table.flush()
+NetworkTables.flush()

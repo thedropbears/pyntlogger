@@ -1,14 +1,15 @@
 import csv
-from networktables import NetworkTable, NetworkTables
 import time
+
+from networktables import NetworkTables
 
 log_frequency = 50
 
 class NTLogger:
 
     def __init__(self):
-        NetworkTables.initialize(server='10.47.74.2')
-        self.table = NetworkTable.getTable('SmartDashboard')
+        NetworkTables.startClientTeam(4774)
+        self.table = NetworkTables.getTable('SmartDashboard')
         self.table.putBoolean('log', False)
         self.logging = False
         self.keys = []
@@ -32,7 +33,6 @@ class NTLogger:
             self.logfile = None
 
     def write_table(self):
-        to_write = ""
         values = [self.table.getValue(key) for key in self.keys]
         self.writer.writerow(values)
         self.logfile.flush()
