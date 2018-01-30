@@ -1,44 +1,49 @@
+#!/usr/bin/env python3
+
 import csv
 import time
 
 from networktables import NetworkTables
 
-log_frequency = 50
 
 class NTLogger:
 
     def __init__(self):
         NetworkTables.startClientTeam(4774)
         self.table = NetworkTables.getTable('SmartDashboard')
-        self.table.putBoolean('log', False)
+        self.log_entry = self.table.getEntry('log')
+        self.log_entry.setBoolean(False)
         self.logging = False
-        self.keys = []
+        self.entries = []
         self.logfile = None
 
     def start_logging(self):
         self.logging = True
-        self.keys = sorted(self.table.getKeys())
+
+        keys = [x for x in self.table.getKeys() if x != 'log']
+        keys.sort()
+        self.entries = [self.table.getEntry(key) for key in keys]
+
         fname = str(int(time.time()))+".csv"
         self.logfile = open(fname, 'w')
         self.writer = csv.writer(self.logfile)
-        self.writer.writerow(self.keys)
-        self.logfile.flush()
+        self.writer.writerow(keys)
 
     def stop_logging(self):
         self.logging = False
-        self.keys = []
+        self.entries = []
         self.writer = None
         if self.logfile:
             self.logfile.close()
             self.logfile = None
 
     def write_table(self):
-        values = [self.table.getValue(key) for key in self.keys]
+        values = [entry.get() for entry in self.entries]
         self.writer.writerow(values)
         self.logfile.flush()
 
     def loop(self):
-        log = self.table.getValue('log')
+        log = self.log_entry.getBoolean(False)
         if self.logging and not log:
             self.stop_logging()
         elif self.logging:
@@ -48,12 +53,6 @@ class NTLogger:
 
 if __name__ == "__main__":
     logger = NTLogger()
-    last_tm = time.time()
     while True:
-        try:
-            # time.sleep((1/log_frequency) - (time.time()-last_tm))
-            time.sleep(1/20)
-        except ValueError as e:
-            print(e)
+        time.sleep(1/20)
         logger.loop()
-        last_tm = time.time()
