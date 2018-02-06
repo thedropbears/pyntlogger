@@ -38,7 +38,7 @@ class NTLogger:
             self.logfile = None
 
     def write_table(self):
-        values = [entry.get() for entry in self.entries]
+        values = [entry.value for entry in self.entries]
         self.writer.writerow(values)
         self.logfile.flush()
 
