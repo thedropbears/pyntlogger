@@ -51,6 +51,7 @@ class NTLogger:
         elif log:
             self.start_logging()
 
+
 if __name__ == "__main__":
     logger = NTLogger()
     while True:
